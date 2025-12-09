@@ -1,0 +1,120 @@
+import requests
+
+from config import BASE_URL
+
+
+class ScooterApiClient:
+    """Клиент для работы с API Яндекс Самокат"""
+    
+    def __init__(self):
+        self.base_url = BASE_URL
+    
+    def create_courier(self, login, password, first_name=None):
+        """
+        Создание курьера.
+        Args:
+            login: логин курьера
+            password: пароль курьера
+            first_name: имя курьера (опционально)
+        Returns:
+            объект Response
+        """
+        payload = {
+            "login": login,
+            "password": password
+        }
+        if first_name is not None:
+            payload["firstName"] = first_name
+        return requests.post(f'{self.base_url}/api/v1/courier', json=payload)
+    
+    def login_courier(self, login, password):
+        """
+        Авторизация курьера.
+        Args:
+            login: логин курьера
+            password: пароль курьера
+        Returns:
+            объект Response
+        """
+        payload = {
+            "login": login,
+            "password": password
+        }
+        return requests.post(f'{self.base_url}/api/v1/courier/login', json=payload)
+    
+    def delete_courier(self, courier_id):
+        """
+        Удаление курьера.
+        Args:
+            courier_id: ID курьера
+        Returns:
+            объект Response
+        """
+        return requests.delete(f'{self.base_url}/api/v1/courier/{courier_id}')
+    
+    def create_order(self, first_name, last_name, address, metro_station, phone, rent_time, delivery_date, comment, color=None):
+        """
+        Создание заказа.
+        Args:
+            first_name: имя
+            last_name: фамилия
+            address: адрес
+            metro_station: станция метро
+            phone: телефон
+            rent_time: время аренды
+            delivery_date: дата доставки
+            comment: комментарий
+            color: цвет самоката (BLACK, GREY или список)
+        Returns:
+            объект Response
+        """
+        payload = {
+            "firstName": first_name,
+            "lastName": last_name,
+            "address": address,
+            "metroStation": metro_station,
+            "phone": phone,
+            "rentTime": rent_time,
+            "deliveryDate": delivery_date,
+            "comment": comment
+        }
+        
+        if color is not None:
+            payload["color"] = color
+        
+        return requests.post(f'{self.base_url}/api/v1/orders', json=payload)
+    
+    def get_orders_list(self):
+        """
+        Получение списка заказов.
+        Returns:
+            объект Response
+        """
+        return requests.get(f'{self.base_url}/api/v1/orders')
+    
+    def accept_order(self, order_id, courier_id):
+        """
+        Принять заказ.
+        Args:
+            order_id: ID заказа
+            courier_id: ID курьера
+        Returns:
+            объект Response
+        """
+        return requests.put(
+            f'{self.base_url}/api/v1/orders/accept/{order_id}',
+            params={"courierId": courier_id}
+        )
+    
+    def get_order_by_track(self, track):
+        """
+        Получить заказ по его номеру.
+        Args:
+            track: номер заказа
+        Returns:
+            объект Response
+        """
+        return requests.get(
+            f'{self.base_url}/api/v1/orders/track',
+            params={"t": track}
+        )
