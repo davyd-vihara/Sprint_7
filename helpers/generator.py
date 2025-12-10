@@ -15,6 +15,19 @@ def generate_random_string(length):
     return random_string
 
 
+def generate_courier_data():
+    """
+    Генерирует данные курьера (логин, пароль, имя).
+    Returns:
+        словарь с ключами: login, password, first_name
+    """
+    return {
+        "login": generate_random_string(10),
+        "password": generate_random_string(10),
+        "first_name": generate_random_string(10)
+    }
+
+
 def register_new_courier_and_return_login_password():
     """
     Метод регистрации нового курьера возвращает список из логина и пароля.
@@ -29,16 +42,14 @@ def register_new_courier_and_return_login_password():
     # создаём список, чтобы метод мог его вернуть
     login_pass = []
     
-    # генерируем логин, пароль и имя курьера
-    login = generate_random_string(10)
-    password = generate_random_string(10)
-    first_name = generate_random_string(10)
+    # генерируем данные курьера
+    courier_data = generate_courier_data()
     
     # собираем тело запроса
     payload = {
-        "login": login,
-        "password": password,
-        "firstName": first_name
+        "login": courier_data["login"],
+        "password": courier_data["password"],
+        "firstName": courier_data["first_name"]
     }
     
     # отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response
@@ -46,9 +57,9 @@ def register_new_courier_and_return_login_password():
     
     # если регистрация прошла успешно (код ответа 201), добавляем в список логин и пароль курьера
     if response.status_code == 201:
-        login_pass.append(login)
-        login_pass.append(password)
-        login_pass.append(first_name)
+        login_pass.append(courier_data["login"])
+        login_pass.append(courier_data["password"])
+        login_pass.append(courier_data["first_name"])
     
     # возвращаем список
     return login_pass

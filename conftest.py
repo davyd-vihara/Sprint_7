@@ -1,7 +1,7 @@
 import pytest
 
 from helpers.api_client import ScooterApiClient
-from helpers.generator import generate_random_string
+from helpers.generator import generate_courier_data
 
 
 @pytest.fixture
@@ -16,15 +16,7 @@ def courier_data():
     Фикстура для создания данных курьера.
     Возвращает словарь с login, password, first_name.
     """
-    login = generate_random_string(10)
-    password = generate_random_string(10)
-    first_name = generate_random_string(10)
-    
-    return {
-        "login": login,
-        "password": password,
-        "first_name": first_name
-    }
+    return generate_courier_data()
 
 
 @pytest.fixture
