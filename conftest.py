@@ -28,9 +28,10 @@ def courier_data():
 
 
 @pytest.fixture
-def created_courier(api_client, courier_data):
+def courier_setup(api_client, courier_data):
     """
-    Фикстура для создания курьера перед тестом.
+    Базовая фикстура для создания курьера.
+    Возвращает response от создания и courier_id.
     После теста курьер удаляется.
     """
     # Создаём курьера
@@ -47,15 +48,36 @@ def created_courier(api_client, courier_data):
     )
     courier_id = login_response.json()["id"]
     
+    yield response, courier_id
+    
+    # Удаляем курьера после теста
+    api_client.delete_courier(courier_id)
+
+
+@pytest.fixture
+def created_courier(courier_setup, courier_data):
+    """
+    Фикстура для создания курьера перед тестом.
+    После теста курьер удаляется.
+    """
+    response, courier_id = courier_setup
+    
     yield {
         "login": courier_data["login"],
         "password": courier_data["password"],
         "first_name": courier_data["first_name"],
         "id": courier_id
     }
-    
-    # Удаляем курьера после теста
-    api_client.delete_courier(courier_id)
+
+
+@pytest.fixture
+def courier_creation_response(courier_setup):
+    """
+    Фикстура для создания курьера и получения response.
+    После теста курьер автоматически удаляется через yield.
+    """
+    response, courier_id = courier_setup
+    yield response
 
 
 @pytest.fixture
@@ -104,30 +126,3 @@ def created_order(api_client, order_data):
         "track": track,
         "order_id": order_id
     }
-
-
-@pytest.fixture
-def courier_creation_response(api_client, courier_data):
-    """
-    Фикстура для создания курьера и получения response.
-    После теста курьер автоматически удаляется через yield.
-    """
-    # Создаём курьера
-    response = api_client.create_courier(
-        courier_data["login"],
-        courier_data["password"],
-        courier_data["first_name"]
-    )
-    
-    # Получаем ID курьера для удаления после теста
-    login_response = api_client.login_courier(
-        courier_data["login"],
-        courier_data["password"]
-    )
-    courier_id = login_response.json()["id"]
-    
-    # Возвращаем response для проверки в тесте
-    yield response
-    
-    # Удаляем курьера после теста
-    api_client.delete_courier(courier_id)
