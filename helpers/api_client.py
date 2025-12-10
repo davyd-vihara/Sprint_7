@@ -1,6 +1,6 @@
 import requests
 
-from config import BASE_URL
+from config import BASE_URL, ENDPOINTS
 
 
 class ScooterApiClient:
@@ -25,7 +25,7 @@ class ScooterApiClient:
         }
         if first_name is not None:
             payload["firstName"] = first_name
-        return requests.post(f'{self.base_url}/api/v1/courier', json=payload)
+        return requests.post(f'{self.base_url}{ENDPOINTS["courier"]}', json=payload)
     
     def login_courier(self, login, password):
         """
@@ -40,7 +40,7 @@ class ScooterApiClient:
             "login": login,
             "password": password
         }
-        return requests.post(f'{self.base_url}/api/v1/courier/login', json=payload)
+        return requests.post(f'{self.base_url}{ENDPOINTS["courier_login"]}', json=payload)
     
     def delete_courier(self, courier_id):
         """
@@ -50,7 +50,8 @@ class ScooterApiClient:
         Returns:
             объект Response
         """
-        return requests.delete(f'{self.base_url}/api/v1/courier/{courier_id}')
+        endpoint = ENDPOINTS["courier_delete"].format(courier_id=courier_id)
+        return requests.delete(f'{self.base_url}{endpoint}')
     
     def create_order(self, first_name, last_name, address, metro_station, phone, rent_time, delivery_date, comment):
         """
@@ -77,7 +78,7 @@ class ScooterApiClient:
             "deliveryDate": delivery_date,
             "comment": comment
         }
-        return requests.post(f'{self.base_url}/api/v1/orders', json=payload)
+        return requests.post(f'{self.base_url}{ENDPOINTS["orders"]}', json=payload)
     
     def create_order_with_color(self, first_name, last_name, address, metro_station, phone, rent_time, delivery_date, comment, color):
         """
@@ -106,7 +107,7 @@ class ScooterApiClient:
             "comment": comment,
             "color": color
         }
-        return requests.post(f'{self.base_url}/api/v1/orders', json=payload)
+        return requests.post(f'{self.base_url}{ENDPOINTS["orders"]}', json=payload)
     
     def get_orders_list(self):
         """
@@ -114,7 +115,7 @@ class ScooterApiClient:
         Returns:
             объект Response
         """
-        return requests.get(f'{self.base_url}/api/v1/orders')
+        return requests.get(f'{self.base_url}{ENDPOINTS["orders"]}')
     
     def accept_order(self, order_id, courier_id):
         """
@@ -125,8 +126,9 @@ class ScooterApiClient:
         Returns:
             объект Response
         """
+        endpoint = ENDPOINTS["orders_accept"].format(order_id=order_id)
         return requests.put(
-            f'{self.base_url}/api/v1/orders/accept/{order_id}',
+            f'{self.base_url}{endpoint}',
             params={"courierId": courier_id}
         )
     
@@ -139,6 +141,6 @@ class ScooterApiClient:
             объект Response
         """
         return requests.get(
-            f'{self.base_url}/api/v1/orders/track',
+            f'{self.base_url}{ENDPOINTS["orders_track"]}',
             params={"t": track}
         )
