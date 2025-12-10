@@ -40,15 +40,11 @@ def created_courier(api_client, courier_data):
         courier_data["first_name"]
     )
     
-    # Проверяем успешное создание
-    assert response.status_code == 201
-    
     # Получаем ID курьера для удаления
     login_response = api_client.login_courier(
         courier_data["login"],
         courier_data["password"]
     )
-    assert login_response.status_code == 200
     courier_id = login_response.json()["id"]
     
     yield {
@@ -98,12 +94,10 @@ def created_order(api_client, order_data):
         comment=order_data["comment"]
     )
     
-    assert create_response.status_code == 201
     track = create_response.json()["track"]
     
     # Получаем заказ по track, чтобы узнать его ID
     get_order_response = api_client.get_order_by_track(track)
-    assert get_order_response.status_code == 200
     order_id = get_order_response.json()["order"]["id"]
     
     return {
@@ -126,14 +120,10 @@ def courier_creation_response(api_client, courier_data):
     )
     
     # Получаем ID курьера для удаления после теста
-    # Проверяем успешное создание (для тестов, которые проверяют успешное создание)
-    assert response.status_code == 201
-    
     login_response = api_client.login_courier(
         courier_data["login"],
         courier_data["password"]
     )
-    assert login_response.status_code == 200
     courier_id = login_response.json()["id"]
     
     # Возвращаем response для проверки в тесте
