@@ -52,9 +52,36 @@ class ScooterApiClient:
         """
         return requests.delete(f'{self.base_url}/api/v1/courier/{courier_id}')
     
-    def create_order(self, first_name, last_name, address, metro_station, phone, rent_time, delivery_date, comment, color=None):
+    def create_order(self, first_name, last_name, address, metro_station, phone, rent_time, delivery_date, comment):
         """
-        Создание заказа.
+        Создание заказа без указания цвета.
+        Args:
+            first_name: имя
+            last_name: фамилия
+            address: адрес
+            metro_station: станция метро
+            phone: телефон
+            rent_time: время аренды
+            delivery_date: дата доставки
+            comment: комментарий
+        Returns:
+            объект Response
+        """
+        payload = {
+            "firstName": first_name,
+            "lastName": last_name,
+            "address": address,
+            "metroStation": metro_station,
+            "phone": phone,
+            "rentTime": rent_time,
+            "deliveryDate": delivery_date,
+            "comment": comment
+        }
+        return requests.post(f'{self.base_url}/api/v1/orders', json=payload)
+    
+    def create_order_with_color(self, first_name, last_name, address, metro_station, phone, rent_time, delivery_date, comment, color):
+        """
+        Создание заказа с указанием цвета.
         Args:
             first_name: имя
             last_name: фамилия
@@ -76,12 +103,9 @@ class ScooterApiClient:
             "phone": phone,
             "rentTime": rent_time,
             "deliveryDate": delivery_date,
-            "comment": comment
+            "comment": comment,
+            "color": color
         }
-        
-        if color is not None:
-            payload["color"] = color
-        
         return requests.post(f'{self.base_url}/api/v1/orders', json=payload)
     
     def get_orders_list(self):
