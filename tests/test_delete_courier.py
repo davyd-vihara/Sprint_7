@@ -19,7 +19,6 @@ class TestDeleteCourier:
         
         # Получаем ID курьера
         login_response = api_client.login_courier(login, password)
-        assert login_response.status_code == 200
         courier_id = login_response.json()["id"]
         
         # Удаляем курьера

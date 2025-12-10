@@ -157,7 +157,8 @@ def created_order(api_client, order_data):
     
     # Получаем заказ по track, чтобы узнать его ID
     get_order_response = api_client.get_order_by_track(track)
-    order_id = get_order_response.json()["order"]["id"]
+    response_json = get_order_response.json()
+    order_id = response_json["order"]["id"]
     
     return {
         "track": track,
