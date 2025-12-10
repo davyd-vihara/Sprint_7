@@ -8,17 +8,27 @@ class TestCreateCourier:
     """Тесты для создания курьера"""
     
     @pytest.mark.courier
-    def test_create_courier_success(self, api_client, created_courier):
+    def test_create_courier_success(self, api_client, courier_data, delete_courier):
         """Проверка успешного создания курьера"""
-        # Курьер уже создан через фикстуру created_courier
-        # Проверяем, что он был создан успешно
-        assert created_courier["id"] is not None
+        # Создаём курьера
+        response = api_client.create_courier(
+            courier_data["login"],
+            courier_data["password"],
+            courier_data["first_name"]
+        )
+        
+        # Регистрируем курьера для удаления после теста
+        login_response = api_client.login_courier(
+            courier_data["login"],
+            courier_data["password"]
+        )
+        courier_id = login_response.json()["id"]
+        delete_courier(courier_id)
+        
+        # Проверяем успешное создание
+        assert response.status_code == 201
         
         # Проверяем, что можем авторизоваться
-        login_response = api_client.login_courier(
-            created_courier["login"],
-            created_courier["password"]
-        )
         assert login_response.status_code == 200
         assert "id" in login_response.json()
     
@@ -52,9 +62,22 @@ class TestCreateCourier:
         assert_insufficient_data_error(response)
     
     @pytest.mark.courier
-    def test_create_courier_without_first_name(self, courier_without_name_creation_response):
+    def test_create_courier_without_first_name(self, api_client, courier_data, delete_courier):
         """Проверка создания курьера без имени (необязательное поле)"""
-        response = courier_without_name_creation_response
+        # Создаём курьера без имени
+        response = api_client.create_courier(
+            courier_data["login"],
+            courier_data["password"],
+            None
+        )
+        
+        # Регистрируем курьера для удаления после теста
+        login_response = api_client.login_courier(
+            courier_data["login"],
+            courier_data["password"]
+        )
+        courier_id = login_response.json()["id"]
+        delete_courier(courier_id)
         
         assert response.status_code == 201
         assert response.json() == {"ok": True}
@@ -73,10 +96,22 @@ class TestCreateCourier:
         assert_already_exists_error(response)
     
     @pytest.mark.courier
-    def test_create_courier_returns_ok_true(self, courier_creation_response):
+    def test_create_courier_returns_ok_true(self, api_client, courier_data, delete_courier):
         """Проверка, что успешный запрос возвращает {"ok": true}"""
-        response = courier_creation_response
+        # Создаём курьера
+        response = api_client.create_courier(
+            courier_data["login"],
+            courier_data["password"],
+            courier_data["first_name"]
+        )
         
-        # Проверяем согласно заданию
+        # Регистрируем курьера для удаления после теста
+        login_response = api_client.login_courier(
+            courier_data["login"],
+            courier_data["password"]
+        )
+        courier_id = login_response.json()["id"]
+        delete_courier(courier_id)
+        
         assert response.status_code == 201
         assert response.json() == {"ok": True}

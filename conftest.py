@@ -20,6 +20,25 @@ def courier_data():
 
 
 @pytest.fixture
+def delete_courier(api_client):
+    """
+    Фикстура для удаления курьера после теста.
+    Принимает courier_id и удаляет курьера.
+    """
+    courier_ids = []
+    
+    def _delete_courier(courier_id):
+        """Добавляет ID курьера в список для удаления после теста"""
+        courier_ids.append(courier_id)
+    
+    yield _delete_courier
+    
+    # Удаляем всех курьеров после теста
+    for courier_id in courier_ids:
+        api_client.delete_courier(courier_id)
+
+
+@pytest.fixture
 def courier_setup(api_client, courier_data):
     """
     Базовая фикстура для создания курьера.
