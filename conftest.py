@@ -73,6 +73,32 @@ def courier_creation_response(courier_setup):
 
 
 @pytest.fixture
+def courier_without_name_creation_response(api_client, courier_data):
+    """
+    Фикстура для создания курьера без имени и получения response.
+    После теста курьер автоматически удаляется через yield.
+    """
+    # Создаём курьера без имени
+    response = api_client.create_courier(
+        courier_data["login"],
+        courier_data["password"],
+        None
+    )
+    
+    # Получаем ID курьера для удаления
+    login_response = api_client.login_courier(
+        courier_data["login"],
+        courier_data["password"]
+    )
+    courier_id = login_response.json()["id"]
+    
+    yield response
+    
+    # Удаляем курьера после теста
+    api_client.delete_courier(courier_id)
+
+
+@pytest.fixture
 def order_data():
     """
     Фикстура для создания данных заказа.

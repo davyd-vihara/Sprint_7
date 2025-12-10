@@ -52,27 +52,12 @@ class TestCreateCourier:
         assert_insufficient_data_error(response)
     
     @pytest.mark.courier
-    def test_create_courier_without_first_name(self, api_client, courier_data):
+    def test_create_courier_without_first_name(self, courier_without_name_creation_response):
         """Проверка создания курьера без имени (необязательное поле)"""
-        # Передаём None, чтобы поле вообще не было в запросе
-        response = api_client.create_courier(
-            courier_data["login"],
-            courier_data["password"],
-            None
-        )
+        response = courier_without_name_creation_response
         
-        # API принимает курьера без firstName (поле необязательное)
         assert response.status_code == 201
         assert response.json() == {"ok": True}
-        
-        # Удаляем созданного курьера
-        login_response = api_client.login_courier(
-            courier_data["login"],
-            courier_data["password"]
-        )
-        assert login_response.status_code == 200
-        courier_id = login_response.json()["id"]
-        api_client.delete_courier(courier_id)
     
     @pytest.mark.courier
     def test_create_courier_with_existing_login(self, api_client, created_courier):
