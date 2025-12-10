@@ -1,6 +1,6 @@
 import pytest
 
-from helpers.assertions import assert_insufficient_data_error, assert_not_found_error
+from helpers.assertions import assert_insufficient_data_error, assert_order_not_found_error
 
 
 class TestGetOrderByTrack:
@@ -34,4 +34,4 @@ class TestGetOrderByTrack:
         response = api_client.get_order_by_track(fake_track)
         
         assert response.status_code == 404
-        assert_not_found_error(response, "заказ")
+        assert_order_not_found_error(response)

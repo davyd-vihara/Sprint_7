@@ -1,6 +1,6 @@
 import pytest
 
-from helpers.assertions import assert_not_found_error
+from helpers.assertions import assert_courier_not_found_error
 from helpers.generator import register_new_courier_and_return_login_password
 
 
@@ -42,4 +42,4 @@ class TestDeleteCourier:
         response = api_client.delete_courier(fake_id)
         
         assert response.status_code == 404
-        assert_not_found_error(response, "курьер")
+        assert_courier_not_found_error(response)

@@ -1,6 +1,6 @@
 import pytest
 
-from helpers.assertions import assert_insufficient_data_error, assert_not_found_error
+from helpers.assertions import assert_insufficient_data_error, assert_courier_not_exists_error, assert_order_not_exists_error
 
 
 class TestAcceptOrder:
@@ -36,7 +36,7 @@ class TestAcceptOrder:
         response = api_client.accept_order(order_id, fake_courier_id)
         
         assert response.status_code == 404
-        assert_not_found_error(response, "курьер")
+        assert_courier_not_exists_error(response)
     
     @pytest.mark.order
     def test_accept_order_without_order_id(self, api_client, created_courier):
@@ -56,4 +56,4 @@ class TestAcceptOrder:
         response = api_client.accept_order(fake_order_id, courier_id)
         
         assert response.status_code == 404
-        assert_not_found_error(response, "заказ")
+        assert_order_not_exists_error(response)

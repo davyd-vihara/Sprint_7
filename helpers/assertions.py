@@ -1,39 +1,47 @@
-def assert_error_message_contains(response, expected_texts):
-    """
-    Проверяет, что сообщение об ошибке содержит один из ожидаемых текстов.
-    Args:
-        response: объект Response от requests
-        expected_texts: список строк для поиска в сообщении
-    """
-    message = response.json()["message"].lower()
-    assert any(text.lower() in message for text in expected_texts), \
-        f"Сообщение '{response.json()['message']}' не содержит ни одного из ожидаемых текстов: {expected_texts}"
-
-
 def assert_insufficient_data_error(response):
     """Проверяет ошибку 'Недостаточно данных'"""
-    assert_error_message_contains(response, ["Недостаточно данных", "required"])
+    message = response.json()["message"].lower()
+    assert "недостаточно данных" in message, \
+        f"Сообщение '{response.json()['message']}' не содержит ожидаемого текста 'Недостаточно данных'"
 
 
 def assert_already_exists_error(response):
     """Проверяет ошибку 'уже используется'"""
-    assert_error_message_contains(response, ["уже используется", "already exists"])
+    message = response.json()["message"].lower()
+    assert "уже используется" in message, \
+        f"Сообщение '{response.json()['message']}' не содержит ожидаемого текста 'уже используется'"
 
 
-def assert_not_found_error(response, entity_type="объект"):
-    """
-    Проверяет ошибку 'не найдено'.
-    Args:
-        response: объект Response от requests
-        entity_type: тип объекта для более точной проверки ("курьер", "заказ", "учетная запись")
-    """
-    if entity_type == "курьер":
-        expected_texts = ["курьера с таким id нет", "курьера с таким id не существует", "not found"]
-    elif entity_type == "заказ":
-        expected_texts = ["заказа с таким id не существует", "заказ не найден", "not found"]
-    elif entity_type == "учетная запись":
-        expected_texts = ["учетная запись не найдена", "not found"]
-    else:
-        expected_texts = ["не найдено", "not found"]
-    
-    assert_error_message_contains(response, expected_texts)
+def assert_courier_not_found_error(response):
+    """Проверяет ошибку 'курьер не найден' - вариант 'курьера с таким id нет'"""
+    message = response.json()["message"].lower().rstrip('.')
+    assert "курьера с таким id нет" in message, \
+        f"Сообщение '{response.json()['message']}' не содержит ожидаемого текста 'курьера с таким id нет'"
+
+
+def assert_courier_not_exists_error(response):
+    """Проверяет ошибку 'курьер не найден' - вариант 'курьера с таким id не существует'"""
+    message = response.json()["message"].lower()
+    assert "курьера с таким id не существует" in message, \
+        f"Сообщение '{response.json()['message']}' не содержит ожидаемого текста 'курьера с таким id не существует'"
+
+
+def assert_order_not_found_error(response):
+    """Проверяет ошибку 'заказ не найден'"""
+    message = response.json()["message"].lower()
+    assert "заказ не найден" in message, \
+        f"Сообщение '{response.json()['message']}' не содержит ожидаемого текста 'заказ не найден'"
+
+
+def assert_order_not_exists_error(response):
+    """Проверяет ошибку 'заказ не найден' - вариант 'заказа с таким id не существует'"""
+    message = response.json()["message"].lower()
+    assert "заказа с таким id не существует" in message, \
+        f"Сообщение '{response.json()['message']}' не содержит ожидаемого текста 'заказа с таким id не существует'"
+
+
+def assert_account_not_found_error(response):
+    """Проверяет ошибку 'учетная запись не найдена'"""
+    message = response.json()["message"].lower()
+    assert "учетная запись не найдена" in message, \
+        f"Сообщение '{response.json()['message']}' не содержит ожидаемого текста 'учетная запись не найдена'"

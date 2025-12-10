@@ -1,6 +1,6 @@
 import pytest
 
-from helpers.assertions import assert_insufficient_data_error, assert_not_found_error
+from helpers.assertions import assert_insufficient_data_error, assert_account_not_found_error
 from helpers.generator import generate_random_string
 
 
@@ -42,7 +42,7 @@ class TestLoginCourier:
         response = api_client.login_courier(login, password)
         
         assert response.status_code == 404
-        assert_not_found_error(response, "учетная запись")
+        assert_account_not_found_error(response)
     
     @pytest.mark.courier
     def test_login_nonexistent_courier(self, api_client):
@@ -53,4 +53,4 @@ class TestLoginCourier:
         )
         
         assert response.status_code == 404
-        assert_not_found_error(response, "учетная запись")
+        assert_account_not_found_error(response)
