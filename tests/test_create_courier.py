@@ -66,17 +66,17 @@ class TestCreateCourier:
         assert_already_exists_error(response)
     
     @pytest.mark.courier
-    @pytest.mark.parametrize("missing_field,field_value", [
-        ("login", ""),
-        ("password", ""),
-    ])
-    def test_create_courier_without_required_fields(self, api_client, courier_data, missing_field, field_value):
-        """Проверка создания курьера без обязательных полей"""
-        login = field_value if missing_field == "login" else courier_data["login"]
-        password = field_value if missing_field == "password" else courier_data["password"]
-        first_name = courier_data["first_name"]
+    def test_create_courier_without_login(self, api_client, courier_data):
+        """Проверка создания курьера без поля login"""
+        response = api_client.create_courier("", courier_data["password"], courier_data["first_name"])
         
-        response = api_client.create_courier(login, password, first_name)
+        assert response.status_code == 400
+        assert_insufficient_data_error(response)
+    
+    @pytest.mark.courier
+    def test_create_courier_without_password(self, api_client, courier_data):
+        """Проверка создания курьера без поля password"""
+        response = api_client.create_courier(courier_data["login"], "", courier_data["first_name"])
         
         assert response.status_code == 400
         assert_insufficient_data_error(response)
