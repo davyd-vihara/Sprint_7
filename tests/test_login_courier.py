@@ -21,13 +21,17 @@ class TestLoginCourier:
         assert isinstance(response_body["id"], int)
     
     @pytest.mark.courier
-    @pytest.mark.parametrize("missing_field", ["login", "password"])
-    def test_login_courier_without_required_fields(self, api_client, created_courier, missing_field):
-        """Проверка авторизации без обязательных полей"""
-        login = "" if missing_field == "login" else created_courier["login"]
-        password = "" if missing_field == "password" else created_courier["password"]
+    def test_login_courier_without_login(self, api_client, created_courier):
+        """Проверка авторизации без поля login"""
+        response = api_client.login_courier("", created_courier["password"])
         
-        response = api_client.login_courier(login, password)
+        assert response.status_code == 400
+        assert_insufficient_data_error(response)
+    
+    @pytest.mark.courier
+    def test_login_courier_without_password(self, api_client, created_courier):
+        """Проверка авторизации без поля password"""
+        response = api_client.login_courier(created_courier["login"], "")
         
         assert response.status_code == 400
         assert_insufficient_data_error(response)
