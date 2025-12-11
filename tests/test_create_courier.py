@@ -27,10 +27,30 @@ class TestCreateCourier:
         
         # Проверяем успешное создание
         assert response.status_code == 201
+        assert response.json() == {"ok": True}
+    
+    @pytest.mark.courier
+    def test_created_courier_can_login(self, api_client, courier_data, delete_courier):
+        """Проверка, что созданный курьер может авторизоваться"""
+        # Создаём курьера
+        api_client.create_courier(
+            courier_data["login"],
+            courier_data["password"],
+            courier_data["first_name"]
+        )
         
-        # Проверяем, что можем авторизоваться
+        # Авторизуемся
+        login_response = api_client.login_courier(
+            courier_data["login"],
+            courier_data["password"]
+        )
+        courier_id = login_response.json()["id"]
+        delete_courier(courier_id)
+        
+        # Проверяем успешную авторизацию
         assert login_response.status_code == 200
         assert "id" in login_response.json()
+        assert isinstance(login_response.json()["id"], int)
     
     @pytest.mark.courier
     def test_create_duplicate_courier(self, api_client, created_courier):
