@@ -12,3 +12,4 @@ pip install -r requirements.txt
 
 Write-Host "`nГотово! Виртуальное окружение активировано." -ForegroundColor Green
 Write-Host "Теперь вы можете запустить тесты командой: pytest" -ForegroundColor Yellow
+
