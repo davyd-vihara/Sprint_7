@@ -1,4 +1,5 @@
 import pytest
+import time
 
 from helpers.api_client import ScooterApiClient
 from helpers.generator import generate_courier_data
@@ -156,11 +157,27 @@ def created_order(api_client, order_data):
     track = create_response.json()["track"]
     
     # Получаем заказ по track, чтобы узнать его ID
-    get_order_response = api_client.get_order_by_track(track)
-    response_json = get_order_response.json()
-    order_id = response_json["order"]["id"]
+    # Добавляем retry логику, так как заказ может быть ещё не создан в системе
+    max_retries = 5
     
-    return {
-        "track": track,
-        "order_id": order_id
-    }
+    for attempt in range(max_retries):
+        get_order_response = api_client.get_order_by_track(track)
+        
+        try:
+            get_order_response.raise_for_status()
+            response_json = get_order_response.json()
+            order_id = response_json["order"]["id"]
+            
+            return {
+                "track": track,
+                "order_id": order_id
+            }
+        except Exception:
+            pass
+        
+        time.sleep(0.5)
+    
+    raise Exception(
+        f"Не удалось получить order_id для track={track} "
+        f"после {max_retries} попыток"
+    )

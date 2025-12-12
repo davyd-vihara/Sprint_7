@@ -31,15 +31,15 @@ class TestDeleteCourier:
             assert response.json() == {"ok": True}
     
     @pytest.mark.courier
-    @allure.title("Удаление курьера без ID")
-    @allure.description("Проверка удаления курьера без ID")
-    def test_delete_courier_without_id(self, api_client):
-        """Проверка удаления курьера без ID"""
-        with allure.step("Попытаться удалить курьера без ID"):
+    @allure.title("Удаление курьера с пустым ID")
+    @allure.description("Проверка удаления курьера с пустым ID, ожидается статус 404")
+    def test_delete_courier_with_empty_id(self, api_client):
+        """Проверка удаления курьера с пустым ID, ожидается статус 404"""
+        with allure.step("Попытаться удалить курьера с пустым ID"):
             response = api_client.delete_courier("")
         
-        with allure.step("Проверить ошибку"):
-            assert response.status_code in [400, 404]
+        with allure.step("Проверить ошибку 404"):
+            assert response.status_code == 404
     
     @pytest.mark.courier
     @allure.title("Удаление несуществующего курьера")
